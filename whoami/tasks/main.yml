@@ -1,0 +1,10 @@
+- name: Copy whoami
+  ansible.builtin.copy:
+    src: whoami
+    dest: /root/services/
+    owner: root
+    group: root
+    mode: '700'
+
+- name: Run whoami
+  ansible.builtin.shell: "cd /root/services/whoami && docker stack deploy -c docker-compose.yml WhoAmI"

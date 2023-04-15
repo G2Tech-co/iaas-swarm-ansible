@@ -1,0 +1,71 @@
+version: "3"
+
+services:
+  traefik:
+    hostname: "traefik-swarm.arsalanses.ir"
+    image: traefik:2.9
+    command:
+      - "--log=true"
+      - "--log.level=WARNING"
+      - "--accesslog=true"
+      - "--serverstransport.insecureskipverify=true"
+
+      - "--api=true"
+      - "--api.dashboard=true"
+      - "--entryPoints.http.address=:80"
+      - "--entrypoints.https.address=:443"
+
+      # Remove on production
+      - "--api.insecure=true"
+      - "--api.debug=true"
+
+      - "--providers.docker=true"
+      - "--providers.docker.network=web"
+      - "--providers.docker.exposedbydefault=false"
+      # - "--providers.file.directory=/configs/"
+      # - "--providers.file.watch=true"
+
+      - "--providers.docker.watch=true"
+      - "--providers.docker.endpoint=unix:///var/run/docker.sock"
+      - "--providers.docker.swarmmode=true"
+
+      # - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+      # - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=http"
+      # - "--certificatesresolvers.letsencrypt.acme.email=${letsencrypt_email}"
+      # - "--certificatesresolvers.letsencrypt.acme.storage=acme.json"
+
+      - "--global.sendAnonymousUsage=false"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      # - "./acme.json:/acme.json"
+      # - "./configs/:/configs/"
+    networks:
+      - web
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.traefikpanel.entrypoints=http"
+        - "traefik.http.routers.traefikpanel.rule=Host(`traefik-swarm.example.ir`)"
+        - "traefik.http.routers.traefikpanel.service=api@internal"
+
+        - "traefik.http.services.traefikpanel.loadbalancer.server.port=8080"
+        - "traefik.docker.network=web"
+
+        # - "traefik.http.routers.traefikpanel.tls.certresolver=letsencrypt"
+        # - "traefik.http.middlewares.traefikpanel-auth.basicauth.users=${traefik_dashboard_username}:${traefik_dashboard_password}"
+        # - "traefik.http.routers.traefikpanel.middlewares=traefikpanel-auth"
+      mode: global
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        delay: 10s
+      placement:
+        constraints: [node.role == manager]
+
+networks:
+  web:
+    external: true

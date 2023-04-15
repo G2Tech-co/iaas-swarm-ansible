@@ -1,0 +1,19 @@
+- hosts: main
+
+  # Master
+
+  roles:
+    - essentials
+    - swap
+    - docker-master
+    - traefik
+    - whoami
+    - reboot
+
+  # Worker
+
+  # roles:
+  #   - essentials
+  #   - swap
+  #   - docker-worker
+  #   - reboot

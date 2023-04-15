@@ -1,0 +1,21 @@
+version: "3"
+
+services:
+  whoami:
+    image: traefik/whoami:latest
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=web"
+        - "traefik.http.routers.whoami.rule=Host(`whoami.example.ir`)"
+        - "traefik.http.routers.whoami.entrypoints=http"
+        - "traefik.http.routers.whoami.service=whoami"
+        - "traefik.http.services.whoami.loadbalancer.server.port=80"
+      mode: replicated
+      replicas: 3
+    networks:
+      - web
+
+networks:
+  web:
+    external: true
