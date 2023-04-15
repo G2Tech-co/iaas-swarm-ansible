@@ -10,7 +10,7 @@
 - [x] Reboot
 
 ## Setup
-```
+```sh
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
@@ -20,7 +20,7 @@ echo $(htpasswd -nB user) | sed -e s/\\$/\\$\\$/g
 
 ## Run
 Add ssh config host name to `hosts`
-```
+```sh
 ansible-playbook setup.yml --syntax-check
 ansible-playbook setup.yml
 ```
@@ -29,4 +29,14 @@ ansible-playbook setup.yml
 ```
 Swap: 2G
 Traefik: auth
+```
+
+## Test
+```sh
+docker node ls
+docker stack ls
+docker service ls
+
+docker service update $svc --force
+docker service ps --filter desired-state=running
 ```
