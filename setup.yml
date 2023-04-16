@@ -5,6 +5,7 @@
   roles:
     - essentials
     - swap
+    - gitlab
     - docker-master
     - traefik
     - whoami
